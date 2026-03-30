@@ -1,0 +1,23 @@
+
+
+#  SECURITY: Environment Variables
+.env
+
+#  Large Model Files
+*.pkl
+model/
+
+#  Database Files
+instance/
+*.db
+
+#  Python Cache
+__pycache__/
+*.pyc
+
+#  Virtual Environment
+venv/
+
+#  Operating System Files
+.DS_Store
+Thumbs.db

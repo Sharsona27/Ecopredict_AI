@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile - EcoPredict AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#0b0f1a] text-white min-h-screen">
+
+{% include 'components/navbar.html' %}
+
+<div class="max-w-5xl mx-auto px-4 pt-28 pb-20">
+  <h1 class="text-3xl font-bold mb-2 bg-gradient-to-r from-cyan-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent">
+    Your Profile
+  </h1>
+  <p class="text-gray-400 text-sm mb-8">Overview of your account and prediction activity</p>
+
+  <div class="grid md:grid-cols-2 gap-6">
+
+    <!-- User Info -->
+    <div class="p-6 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl hover:border-cyan-500/20 transition duration-300 hover:shadow-[0_0_30px_rgba(34,211,238,0.15)]">
+      <h2 class="text-sm font-semibold text-cyan-400 mb-4 tracking-wide uppercase">User Info</h2>
+      <div class="space-y-3">
+        <div>
+          <p class="text-xs text-gray-500">Name</p>
+          <p class="text-lg font-medium text-white">{{ user_name }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500">Email</p>
+          <p class="text-lg font-medium text-gray-200">{{ user_email }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prediction Stats -->
+    <div class="p-6 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl hover:border-purple-500/20 transition duration-300 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)]">
+      <h2 class="text-sm font-semibold text-purple-400 mb-4 tracking-wide uppercase">Prediction Stats</h2>
+      <p class="text-xs text-gray-500 mb-1">Total Predictions</p>
+      <p id="totalPredictions" class="text-4xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">0</p>
+      <p class="text-gray-500 text-sm mt-3">Based on data stored in this browser (localStorage).</p>
+    </div>
+
+    <!-- Latest Prediction -->
+    <div class="md:col-span-2 p-6 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl hover:border-emerald-500/20 transition duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.12)]">
+      <h2 class="text-sm font-semibold text-emerald-400 mb-4 tracking-wide uppercase">Latest Prediction</h2>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <div class="p-4 rounded-lg bg-black/30 border border-white/5">
+          <p class="text-xs text-gray-500 mb-1">Energy (kWh)</p>
+          <p id="latestEnergy" class="text-2xl font-bold text-cyan-400">—</p>
+        </div>
+        <div class="p-4 rounded-lg bg-black/30 border border-white/5">
+          <p class="text-xs text-gray-500 mb-1">CO₂ (kg)</p>
+          <p id="latestCo2" class="text-2xl font-bold text-purple-400">—</p>
+        </div>
+        <div class="p-4 rounded-lg bg-black/30 border border-white/5">
+          <p class="text-xs text-gray-500 mb-1">Cost (₹)</p>
+          <p id="latestCost" class="text-2xl font-bold text-emerald-400">—</p>
+        </div>
+      </div>
+      <p id="latestEmpty" class="text-gray-500 text-sm mt-4 hidden">No predictions yet. Run a prediction from the Predict page.</p>
+    </div>
+
+  </div>
+
+  <div class="mt-8 max-w-md mx-auto">
+    <a href="{{ url_for('logout') }}"
+      class="block w-full py-4 rounded-xl text-center text-lg font-semibold
+      bg-gradient-to-r from-purple-600 to-cyan-600
+      hover:from-purple-500 hover:to-cyan-500 hover:scale-[1.02] active:scale-[0.98]
+      transition duration-300 shadow-lg shadow-purple-500/25">
+      Logout
+    </a>
+  </div>
+</div>
+
+<script>
+(function () {
+  const ELECTRICITY_RATE = 8;
+  let history = [];
+  try {
+    history = JSON.parse(localStorage.getItem("history") || "[]");
+  } catch (e) {
+    history = [];
+  }
+
+  const totalEl = document.getElementById("totalPredictions");
+  if (totalEl) totalEl.textContent = Array.isArray(history) ? history.length : 0;
+
+  let last = Array.isArray(history) && history.length ? history[history.length - 1] : null;
+  if (!last) {
+    try {
+      last = JSON.parse(localStorage.getItem("result") || "null");
+    } catch (e) {
+      last = null;
+    }
+  }
+
+  const energyEl = document.getElementById("latestEnergy");
+  const co2El = document.getElementById("latestCo2");
+  const costEl = document.getElementById("latestCost");
+  const emptyEl = document.getElementById("latestEmpty");
+
+  if (last && (last.energy != null || last.co2 != null)) {
+    if (energyEl) energyEl.textContent = last.energy != null ? Number(last.energy).toFixed(2) : "—";
+    if (co2El) co2El.textContent = last.co2 != null ? Number(last.co2).toFixed(2) : "—";
+    let cost = last.cost;
+    if (cost == null && last.energy != null) cost = Number(last.energy) * ELECTRICITY_RATE;
+    if (costEl) costEl.textContent = cost != null ? "₹ " + Number(cost).toFixed(0) : "—";
+    if (emptyEl) emptyEl.classList.add("hidden");
+  } else {
+    if (emptyEl) emptyEl.classList.remove("hidden");
+  }
+})();
+</script>
+
+{% include 'components/ecobot.html' %}
+
+</body>
+</html>

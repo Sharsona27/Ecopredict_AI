@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Predict - EcoPredict AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#0b0f1a] text-white min-h-screen">
+
+<!-- ✅ Navbar -->
+{% include 'components/navbar.html' %}
+
+<section class="pt-32 pb-20 px-4">
+  <div class="max-w-3xl mx-auto">
+
+    <!-- Heading -->
+    <div class="mb-8 text-center">
+      <h1 class="text-5xl font-bold mb-4 leading-tight
+      bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400
+      bg-clip-text text-transparent">
+        Energy Prediction
+      </h1>
+
+      <p class="text-gray-400">
+        Enter your details to predict energy usage ⚡
+      </p>
+    </div>
+
+    <!-- FORM -->
+    <form id="form" class="space-y-6">
+
+      <!-- Household -->
+      <div class="p-6 bg-white/5 rounded-xl border border-white/10">
+        <h3 class="text-cyan-400 mb-4">Household Info</h3>
+
+        <div class="grid grid-cols-2 gap-4">
+          <input id="family" type="number" placeholder="Family Members" class="input">
+          <input id="rooms" type="number" placeholder="Rooms" class="input">
+        </div>
+      </div>
+
+      <!-- Cooling -->
+      <div class="p-6 bg-white/5 rounded-xl border border-white/10">
+        <h3 class="text-cyan-400 mb-4">Cooling Appliances</h3>
+
+        <div class="grid grid-cols-2 gap-4">
+          <input id="ac" type="number" placeholder="AC Units" class="input">
+          <input id="ac_h" type="number" placeholder="AC Hours" class="input">
+
+          <input id="fans" type="number" placeholder="Fans" class="input">
+          <input id="fan_h" type="number" placeholder="Fan Hours" class="input">
+        </div>
+      </div>
+
+      <!-- Kitchen -->
+      <div class="p-6 bg-white/5 rounded-xl border border-white/10">
+        <h3 class="text-cyan-400 mb-4">Kitchen & Laundry</h3>
+
+        <div class="grid grid-cols-2 gap-4">
+          <input id="fridge" type="number" placeholder="Refrigerators" class="input">
+          <input id="fridge_h" type="number" placeholder="Fridge Hours" class="input">
+
+          <input id="wash_units" type="number" placeholder="Washing Machine Units" class="input">
+          <input id="wash_week" type="number" placeholder="Washes per Week" class="input">
+          
+        </div>
+      </div>
+
+      <!-- Entertainment -->
+      <div class="p-6 bg-white/5 rounded-xl border border-white/10">
+        <h3 class="text-cyan-400 mb-4">Entertainment & Lighting</h3>
+
+        <div class="grid grid-cols-2 gap-4">
+          <input id="tvs" type="number" placeholder="TVs" class="input">
+          <input id="tv_h" type="number" placeholder="TV Hours" class="input">
+
+          <div class="grid grid-cols-2 gap-4">
+            <input id="led_bulbs" type="number" placeholder="LED Bulbs" class="input">
+            <input id="normal_bulbs" type="number" placeholder="Normal Bulbs" class="input">
+          
+            <input id="light_h" type="number" placeholder="Lighting Hours" class="input">
+          </div>
+        </div>
+      </div>
+
+      <!-- BUTTON -->
+      <button class="w-full py-4 rounded-xl
+      bg-gradient-to-r from-purple-600 to-cyan-600
+      hover:scale-105 transition text-lg">
+        ⚡ Predict Energy
+      </button>
+
+    </form>
+
+  </div>
+</section>
+
+<!-- INPUT STYLE -->
+<style>
+.input {
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  width: 100%;
+}
+</style>
+
+<!-- SCRIPT -->
+<script>
+document.getElementById("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const data = {
+    family_members: +family.value,
+    rooms: +rooms.value,
+    ac_units: +ac.value,
+    ac_hours: +ac_h.value,
+    fans: +fans.value,
+    fan_hours: +fan_h.value,
+    refrigerators: +fridge.value,
+    fridge_hours: +fridge_h.value,
+    washing_per_week: +wash_week.value,
+    washing_units: +wash_units.value,
+    tvs: +tvs.value,
+    tv_hours: +tv_h.value,
+    led_bulbs: +led_bulbs.value,
+    normal_bulbs: +normal_bulbs.value,
+    lighting_hours: +light_h.value
+  };
+
+  const res = await fetch("/predict", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  });
+
+  const result = await res.json();
+
+// ✅ store history
+let history = JSON.parse(localStorage.getItem("history")) || [];
+
+history.push(result);
+
+// keep only last 5
+if (history.length > 5) {
+  history.shift();
+}
+
+localStorage.setItem("history", JSON.stringify(history));
+
+window.location.href = `/result?energy=${result.energy}&co2=${result.co2}`;
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EcoPredict AI</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="min-h-screen bg-[#0b0f1a] text-white pt-19">
+
+  {% include 'components/navbar.html' %}
+
+<!-- ✅ HERO -->
+<section class=" pt-32 relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
+
+  <!-- Background Glow -->
+  <div class="absolute inset-0">
+    <div class="absolute top-[-100px] right-[10%] w-[500px] h-[500px] bg-purple-600 opacity-40 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-[-100px] left-[10%] w-[500px] h-[500px] bg-cyan-600 opacity-40 rounded-full blur-[120px]"></div>
+  </div>
+
+  <div class="relative max-w-5xl mx-auto text-center">
+
+    <!-- Tag -->
+    <div class="mb-6 inline-block px-4 py-2 rounded-full bg-white/5 text-cyan-400 text-sm backdrop-blur-md">
+      ✨ Futuristic Energy Intelligence
+    </div>
+
+    <!-- Heading -->
+    <div class="flex justify-center">
+      <h1 class="text-5xl md:text-7xl font-bold mb-6
+leading-[1.3] pb-4
+bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400
+bg-clip-text text-transparent inline-block">
+  Predict Your Energy Future
+</h1>
+    </div>
+
+    <!-- Subtitle -->
+    <p class="text-gray-400 text-lg md:text-xl mt-6 max-w-2xl mx-auto">
+      Advanced AI-powered predictions for smarter energy management and sustainable living
+    </p>
+
+    <!-- BUTTON (FIXED) -->
+    <div class="mt-10">
+      <a href="/predict">
+        <button class="px-8 py-4 text-lg font-semibold rounded-xl 
+          bg-gradient-to-r from-purple-600 to-cyan-600 
+          hover:from-purple-500 hover:to-cyan-500 
+          transition transform hover:scale-105 shadow-lg">
+          Start Prediction →
+        </button>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ✅ FEATURES -->
+<section class="py-20 px-4">
+  <div class="max-w-6xl mx-auto">
+
+    <h2 class="text-3xl md:text-4xl font-bold text-center mb-16
+      bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+      Why Choose EcoPredict AI?
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+      <!-- CARD -->
+      <div class="p-8 rounded-xl bg-white/5 backdrop-blur-lg border border-white/10 hover:bg-white/10 transition">
+        <h3 class="text-xl font-semibold mb-3 text-cyan-400">⚡ AI Prediction</h3>
+        <p class="text-gray-400">
+          Accurate energy consumption predictions powered by advanced machine learning
+        </p>
+      </div>
+
+      <div class="p-8 rounded-xl bg-white/5 backdrop-blur-lg border border-white/10 hover:bg-white/10 transition">
+        <h3 class="text-xl font-semibold mb-3 text-cyan-400">📉 CO2 Tracking</h3>
+        <p class="text-gray-400">
+          Monitor your carbon footprint and environmental impact in real-time
+        </p>
+      </div>
+
+      <div class="p-8 rounded-xl bg-white/5 backdrop-blur-lg border border-white/10 hover:bg-white/10 transition">
+        <h3 class="text-xl font-semibold mb-3 text-cyan-400">🌿 Energy Insights</h3>
+        <p class="text-gray-400">
+          Get personalized recommendations to reduce energy usage and costs
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ✅ CTA -->
+<section class="py-20 px-4">
+  <div class="max-w-4xl mx-auto text-center bg-white/5 backdrop-blur-lg p-12 rounded-xl border border-white/10">
+
+    <h2 class="text-3xl font-bold mb-4
+      bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+      Ready to Transform Your Energy?
+    </h2>
+
+    <p class="text-gray-400 mb-8">
+      Join thousands using AI to optimize their energy consumption
+    </p>
+
+    <a href="/predict">
+      <button class="px-8 py-3 rounded-lg
+        bg-gradient-to-r from-purple-600 to-cyan-600
+        hover:from-purple-500 hover:to-cyan-500">
+        Get Started Now
+      </button>
+    </a>
+
+  </div>
+</section>
+
+<!-- ✅ FLOATING AI BUTTON -->
+<button onclick="toggleChat()"
+  class="fixed bottom-6 right-6 p-4 rounded-full
+  bg-gradient-to-r from-purple-600 to-cyan-600
+  shadow-[0_0_25px_rgba(139,92,246,0.6)]
+  hover:scale-110 transition">
+  ✨
+</button>
+
+<!-- CHATBOX -->
+<div id="chatbox"
+  class="hidden fixed bottom-20 right-6 w-72 p-4
+  bg-black/80 backdrop-blur-lg rounded-xl border border-white/10">
+  <p class="text-sm text-gray-300">AI Ecobot 🤖</p>
+</div>
+
+<script>
+function toggleChat() {
+  document.getElementById("chatbox").classList.toggle("hidden");
+}
+</script>
+
+</body>
+</html>

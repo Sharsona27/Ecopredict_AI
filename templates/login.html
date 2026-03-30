@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - EcoPredict</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#0b0f1a] text-white min-h-screen">
+
+{% include 'components/navbar.html' %}
+
+<section class="pt-32 flex justify-center items-center px-4 pb-20">
+
+  <div class="w-full max-w-md bg-white/5 backdrop-blur-xl p-8 rounded-2xl border border-white/10 shadow-xl hover:border-cyan-500/20 transition duration-300">
+
+    <h1 class="text-3xl font-bold text-center mb-6
+    bg-gradient-to-r from-purple-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+      Welcome Back
+    </h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-5 space-y-2">
+          {% for category, message in messages %}
+          <div class="p-3 rounded-lg text-sm border
+            {% if category == 'error' %}bg-red-500/10 border-red-500/30 text-red-200
+            {% elif category == 'success' %}bg-emerald-500/10 border-emerald-500/30 text-emerald-200
+            {% else %}bg-white/5 border-white/10 text-gray-300{% endif %}">
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('login') }}" class="space-y-5">
+
+      <input type="email" name="email" placeholder="Email" required autocomplete="email"
+        class="w-full p-3 rounded-lg bg-black/50 border border-white/10 focus:border-cyan-500/50 focus:outline-none focus:ring-1 focus:ring-cyan-500/40 transition">
+
+      <input type="password" name="password" placeholder="Password" required autocomplete="current-password"
+        class="w-full p-3 rounded-lg bg-black/50 border border-white/10 focus:border-cyan-500/50 focus:outline-none focus:ring-1 focus:ring-cyan-500/40 transition">
+
+      <button type="submit" class="w-full py-3 rounded-xl font-semibold
+      bg-gradient-to-r from-purple-600 to-cyan-600
+      hover:from-purple-500 hover:to-cyan-500 hover:scale-[1.02] active:scale-[0.98] transition duration-300 shadow-lg shadow-purple-500/20">
+        Login
+      </button>
+
+    </form>
+
+    <p class="text-center text-gray-400 mt-6">
+      Don't have account?
+      <a href="/signup" class="text-cyan-400 hover:text-cyan-300 transition">Signup</a>
+    </p>
+
+  </div>
+
+</section>
+
+{% include 'components/ecobot.html' %}
+
+</body>
+</html>

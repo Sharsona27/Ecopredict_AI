@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Result - EcoPredict AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#0b0f1a] text-white min-h-screen">
+
+{% include 'components/navbar.html' %}
+
+<section class="pt-32 px-4">
+
+    <div class="max-w-2xl mx-auto text-center">
+
+        <!-- Heading -->
+        <h1 class="text-5xl font-bold mb-10
+        bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400
+        bg-clip-text text-transparent">
+            Prediction Result
+        </h1>
+
+        <!-- Card -->
+        <div class="bg-white/5 backdrop-blur-xl p-10 rounded-2xl border border-white/10 shadow-xl">
+
+            <!-- Energy -->
+            <div class="mb-8">
+                <h3 class="text-gray-400 text-lg">Predicted Energy</h3>
+                <p class="text-4xl font-bold text-cyan-400 mt-2">
+                    {{ energy }} kWh
+                </p>
+            </div>
+
+            <!-- CO2 -->
+            <div class="mb-8">
+                <h3 class="text-gray-400 text-lg">Carbon Emission</h3>
+                <p class="text-4xl font-bold text-purple-400 mt-2">
+                    {{ carbon }} kg CO₂
+                </p>
+            </div>
+
+            <p class="mt-4 text-gray-400">
+                {% if energy|float > 600 %}
+                  ⚠ High Energy Usage
+                {% elif energy|float > 300 %}
+                  ⚡ Medium Usage
+                {% else %}
+                  🌿 Low Usage (Efficient)
+                {% endif %}
+              </p>
+
+            <!-- Button -->
+            <div class="flex justify-center mt-6">
+                <a href="/predict">
+                    <button class="px-8 py-3 rounded-xl
+                    bg-gradient-to-r from-purple-600 to-cyan-600
+                    hover:scale-105 transition">
+                        🔁 Try Again
+                    </button>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Chart -->
+<div class="mt-12 grid md:grid-cols-2 gap-8">
+
+    <!-- BAR CHART -->
+    <div class="bg-white/5 p-6 rounded-xl">
+      <h2 class="text-lg text-cyan-400 mb-4">Energy vs CO₂ (Last 5)</h2>
+      <canvas id="barChart"></canvas>
+    </div>
+  
+    <!-- LINE CHART -->
+    <div class="bg-white/5 p-6 rounded-xl">
+      <h2 class="text-lg text-purple-400 mb-4">Appliance Usage Trend</h2>
+      <canvas id="lineChart"></canvas>
+    </div>
+  
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const history = JSON.parse(localStorage.getItem("history")) || [];
+
+// labels
+const labels = history.map((_, i) => "P" + (i+1));
+
+// =====================
+// ✅ BAR CHART
+// =====================
+const energyData = history.map(h => h.energy);
+const co2Data = history.map(h => h.co2);
+
+new Chart(document.getElementById("barChart"), {
+  type: "bar",
+  data: {
+    labels: labels,
+    datasets: [
+      {
+        label: "Energy (kWh)",
+        data: energyData,
+        backgroundColor: "#06b6d4"
+      },
+      {
+        label: "CO2 (kg)",
+        data: co2Data,
+        backgroundColor: "#a855f7"
+      }
+    ]
+  }
+});
+
+
+// =====================
+// ✅ LINE CHART (BREAKDOWN)
+// =====================
+
+const acData = history.map(h => h.breakdown?.ac || 0);
+const fanData = history.map(h => h.breakdown?.fan || 0);
+const lightData = history.map(h => h.breakdown?.light || 0);
+const fridgeData = history.map(h => h.breakdown?.fridge || 0);
+const washData = history.map(h => h.breakdown?.washing || 0);
+
+new Chart(document.getElementById("lineChart"), {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "AC",
+          data: acData,
+          borderColor: "#ff4d6d",
+          backgroundColor: "rgba(255,77,109,0.2)",
+          fill: true,
+          tension: 0.4
+        },
+        {
+          label: "Fan",
+          data: fanData,
+          borderColor: "#22c55e",
+          backgroundColor: "rgba(34,197,94,0.2)",
+          fill: true,
+          tension: 0.4
+        },
+        {
+          label: "Lighting",
+          data: lightData,
+          borderColor: "#facc15",
+          backgroundColor: "rgba(250,204,21,0.2)",
+          fill: true,
+          tension: 0.4
+        },
+        {
+          label: "Fridge",
+          data: fridgeData,
+          borderColor: "#3b82f6",
+          backgroundColor: "rgba(59,130,246,0.2)",
+          fill: true,
+          tension: 0.4
+        },
+        {
+          label: "Washing",
+          data: washData,
+          borderColor: "#a855f7",
+          backgroundColor: "rgba(168,85,247,0.2)",
+          fill: true,
+          tension: 0.4
+        }
+      ]
+    },
+    options: {
+      plugins: {
+        legend: {
+          labels: {
+            color: "white"
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: "white" }
+        },
+        y: {
+          ticks: { color: "white" }
+        }
+      }
+    }
+  });
+</script>
+<div class="mt-12">
+
+  <h2 class="text-2xl text-center mb-5
+  bg-gradient-to-r from-purple-400 to-cyan-400
+  bg-clip-text text-transparent font-bold">
+    💡 Smart Energy Suggestions
+  </h2>
+
+  <div id="suggestionsBox"
+    class="grid md:grid-cols-2 gap-3">
+  </div>
+
+</div>
+<script>
+  const energy = parseFloat("{{ energy }}");
+  
+  let suggestions = [];
+  
+  // Rules
+  if (energy > 500) {
+    suggestions.push({
+      title: "High Energy Usage ⚠️",
+      text: "Reduce AC hours and optimize cooling usage."
+    });
+  }
+  
+  if (energy > 300) {
+    suggestions.push({
+      title: "Improve Efficiency ⚡",
+      text: "Use energy-efficient appliances and smart plugs."
+    });
+  }
+  
+  suggestions.push({
+    title: "Lighting Upgrade 💡",
+    text: "Switch to LED bulbs to save up to 75% energy."
+  });
+  
+  suggestions.push({
+    title: "Standby Power 🔌",
+    text: "Turn off unused devices to avoid hidden energy drain."
+  });
+  
+  // Render cards
+  const box = document.getElementById("suggestionsBox");
+  
+  suggestions.forEach(s => {
+    const div = document.createElement("div");
+  
+    div.className = `
+      p-5 rounded-xl 
+      bg-gradient-to-br from-purple-500/10 to-cyan-500/10
+      border border-white/10
+      hover:-translate-y-2
+      shadow-lg
+    `;
+  
+    div.innerHTML = `
+      <h3 class="text-lg font-semibold text-purple-300 mb-2">
+        ${s.title}
+      </h3>
+      <p class="text-gray-300 text-sm">
+        ${s.text}
+      </p>
+    `;
+  
+    box.appendChild(div);
+  });
+  </script>
+{% include 'components/ecobot.html' %}
+
+</body>
+</html>

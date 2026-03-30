@@ -1,0 +1,69 @@
+<nav class="fixed top-0 w-full z-50 backdrop-blur-xl bg-black/30 border-b border-white/10 shadow-[0_0_20px_rgba(139,92,246,0.2)]">
+  
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center gap-4 flex-wrap">
+  
+      <!-- LOGO -->
+      <div class="flex items-center gap-2 shrink-0">
+        <img src="{{ url_for('static', filename='images/icon.svg') }}"
+     class="w-10 h-10 rounded-lg shadow-[0_0_15px_rgba(139,92,246,0.6)]">
+        <span class="text-lg font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+          EcoPredict AI
+        </span>
+      </div>
+  
+      <!-- NAV LINKS -->
+      <div class="flex items-center gap-6 md:gap-8 text-gray-300 text-sm md:text-base">
+  
+        <a href="/" class="relative hover:text-cyan-400 transition duration-200 after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-cyan-400 hover:after:w-full after:transition-all">
+          Home
+        </a>
+  
+        <a href="/dashboard" class="relative hover:text-cyan-400 transition duration-200 after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-cyan-400 hover:after:w-full after:transition-all">
+          Dashboard
+        </a>
+  
+        <a href="/predict" class="relative hover:text-cyan-400 transition duration-200 after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-cyan-400 hover:after:w-full after:transition-all">
+          Predict
+        </a>
+  
+        <a href="/ecobot" class="relative hover:text-cyan-400 transition duration-200 after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-cyan-400 hover:after:w-full after:transition-all">
+          Ecobot
+        </a>
+  
+      </div>
+  
+      <!-- AUTH / PROFILE -->
+      <div class="flex items-center gap-3 shrink-0">
+        {% if auth_logged_in %}
+        {% set _raw = ((auth_user_name or auth_user_email or '?')|trim) or '?' %}
+        <span class="text-sm text-gray-300 hidden sm:inline max-w-[160px] truncate">
+          Welcome, <span class="text-cyan-400 font-medium">{{ auth_user_name or auth_user_email }}</span>
+        </span>
+        <a href="{{ url_for('profile') }}"
+          title="Profile"
+          class="group flex h-10 w-10 shrink-0 items-center justify-center rounded-full
+          bg-gradient-to-br from-purple-600 via-cyan-500 to-emerald-500
+          text-white font-bold text-sm shadow-lg shadow-purple-500/30
+          ring-2 ring-white/10 hover:ring-cyan-400/50 hover:scale-110 active:scale-95 transition duration-300">
+          {{ _raw[0]|upper }}
+        </a>
+        {% else %}
+        <a href="/login">
+          <button class="text-gray-300 hover:text-cyan-400 transition duration-200">
+            Login
+          </button>
+        </a>
+  
+        <a href="/signup">
+          <button class="px-4 py-2 rounded-lg 
+            bg-gradient-to-r from-purple-600 to-cyan-600 
+            hover:from-purple-500 hover:to-cyan-500 
+            text-white shadow-lg hover:scale-105 active:scale-95 transition duration-300">
+            Sign Up
+          </button>
+        </a>
+        {% endif %}
+      </div>
+  
+    </div>
+  </nav>
