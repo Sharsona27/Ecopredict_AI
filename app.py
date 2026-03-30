@@ -184,8 +184,6 @@ def require_login():
     # Keep prediction JSON API working without session (unchanged contract for clients)
     if request.path == "/predict" and request.method == "POST":
         return None
-    if request.path in ["/login", "/signup", "/logout"]:
-        return None
     if not session.get("user"):
         return redirect(url_for("login"))
 
