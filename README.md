@@ -43,6 +43,7 @@ EcoPredict AI is a smart web-based application that helps users predict **energy
 ---
 
 ## 📂 Project Structure
+```bash
 EcoPredict_AI/
 │── app.py
 │── train_model.py
@@ -65,9 +66,8 @@ EcoPredict_AI/
 
 ## ⚙️ Installation & Setup
 
-### 1️⃣ Clone the Repository
-
 ```bash
+1️⃣ Clone the Repository
 git clone https://github.com/Sharsona27/EcoPredict_AI.git
 cd EcoPredict_AI
 2️⃣ Create Virtual Environment
