@@ -1,0 +1,84 @@
+🌱 EcoPredict AI
+EcoPredict AI is a smart web-based application that helps users predict energy consumption, carbon emissions, and electricity costs using machine learning and AI-powered chatbot assistance.
+
+ Features
+   Energy Consumption Prediction
+   Carbon Emission Calculation
+   Electricity Cost Estimation
+   AI Chatbot (EcoBot) for energy-saving tips
+   Interactive Dashboard
+   User Authentication System (Login/Signup)
+   Machine Learning Model Integration
+
+Tech Stack
+  Frontend: HTML, CSS
+  Backend: Flask (Python)
+  Database: SQLite
+  Machine Learning: Scikit-learn, NumPy, Joblib
+  AI API: Hugging Face Inference API
+  Other Tools: dotenv, Flask-CORS
+
+Project Structure
+  EcoPredict_AI/
+  │── app.py
+  │── train_model.py
+  │── improved_model_training.py
+  │
+  ├── dataset/
+  │   └── energydata_complete.csv
+  │
+  ├── model/   (excluded from GitHub)
+  │   └── *.pkl
+  │
+  ├── templates/
+  ├── static/
+  ├── instance/
+  │
+  └── README.md
+
+
+
+⚙️ Installation & Setup
+  1️⃣ Clone the repository
+  git clone https://github.com/Sharsona27/EcoPredict_AI.git
+  cd EcoPredict_AI
+  2️⃣ Create virtual environment
+  python -m venv venv
+  venv\Scripts\activate   # Windows
+  3️⃣ Install dependencies
+  pip install -r requirements.txt
+  4️⃣ Setup environment variables
+  Create a .env file:
+  HF_TOKEN=your_huggingface_api_key
+  FLASK_SECRET_KEY=your_secret_key
+  ▶️ Run the Application
+  python app.py
+  Then open:
+  http://127.0.0.1:5000/
+
+Dataset
+  Original dataset and processed dataset are provided separately.
+  Google Drive Link: (Add your link here)
+
+AI Chatbot (EcoBot)
+  Uses Hugging Face Inference API
+  Provides:
+  Energy-saving tips
+  General assistance
+  Guidance for predictions
+
+ Model Files
+   Large .pkl model files are not uploaded to GitHub.
+   Download from Drive: (Add your link here)
+
+Deployment
+   Live Project Link: (Add deployed link here)
+
+Future Improvements
+  Improve prediction accuracy
+  Add real-time data integration
+  Enhance UI/UX
+  Add mobile support
+
+📄 License
+This project is licensed under the MIT License.
