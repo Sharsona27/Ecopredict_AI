@@ -62,7 +62,7 @@ EcoPredict_AI/
 └── README.md
 
 
----
+```
 
 ## ⚙️ Installation & Setup
 
@@ -70,16 +70,19 @@ EcoPredict_AI/
 1️⃣ Clone the Repository
 git clone https://github.com/Sharsona27/EcoPredict_AI.git
 cd EcoPredict_AI
+
 2️⃣ Create Virtual Environment
 python -m venv venv
 venv\Scripts\activate   # Windows
+
 3️⃣ Install Dependencies
 pip install -r requirements.txt
+
 4️⃣ Setup Environment Variables
 Create a .env file in the root directory:
-
 HF_API_KEY=your_huggingface_api_key
 FLASK_SECRET_KEY=your_secret_key
+
 ▶️ Run the Application
 python app.py
 Open in browser:
