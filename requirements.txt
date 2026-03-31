@@ -7,3 +7,4 @@ requests
 openai
 scikit-learn
 gunicorn
+gdown

@@ -19,7 +19,7 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from openai import OpenAI
-import requests
+import gdown
 
 # Ensure model directory exists
 os.makedirs("model", exist_ok=True)
@@ -29,13 +29,9 @@ def download_file(url, filename):
     if not os.path.exists(filename):
         print(f"📥 Downloading {filename}...")
         try:
-            r = requests.get(url, stream=True, timeout=60)
-            r.raise_for_status()
-            with open(filename, "wb") as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
+            gdown.download(url, filename, quiet=False)
             print(f"✅ Downloaded {filename}")
+            return True
         except Exception as e:
             print(f"❌ Failed to download {filename}: {e}")
             return False
