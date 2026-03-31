@@ -21,6 +21,28 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import requests
 
+# Ensure model directory exists
+os.makedirs("model", exist_ok=True)
+
+def download_file(url, filename):
+    """Download model files if they don't exist"""
+    if not os.path.exists(filename):
+        print(f"📥 Downloading {filename}...")
+        try:
+            r = requests.get(url, stream=True, timeout=60)
+            r.raise_for_status()
+            with open(filename, "wb") as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+            print(f"✅ Downloaded {filename}")
+        except Exception as e:
+            print(f"❌ Failed to download {filename}: {e}")
+            return False
+    else:
+        print(f"✅ {filename} already exists")
+        return True
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -31,6 +53,46 @@ client = OpenAI(
     base_url="https://router.huggingface.co/v1",
     api_key=os.getenv("HF_TOKEN")
 )
+
+# =========================
+# 📥 AUTO MODEL DOWNLOAD
+# =========================
+print("🔄 Checking model files...")
+
+# Download model files if they don't exist
+model_files = [
+    ("https://drive.google.com/uc?id=1keHlBAsOuV0LtJJFv5Lp1IRyc1ARL2C4", "model/improved_energy_model.pkl"),
+    ("https://drive.google.com/uc?id=1p9kx-Jo8f2hXgupaes4qnoWKmSJh2g-7", "model/scaler.pkl"),
+    ("https://drive.google.com/uc?id=1sa2pzfudlisNiF-_8DlhXKwigtpq8whq", "model/feature_selector.pkl"),
+    ("https://drive.google.com/uc?id=1lZeFy4ChRMEl5G2tqP3aQJPQVWachvTU", "model/selected_features.pkl")
+]
+
+success = True
+for url, filename in model_files:
+    if not download_file(url, filename):
+        success = False
+
+if success:
+    print("✅ All model files ready!")
+else:
+    print("⚠️ Warning: Some model files failed to download")
+
+# =========================
+# 🤖 LOAD IMPROVED ML MODEL
+# =========================
+try:
+    ml_model = joblib.load(os.path.join(os.path.dirname(__file__), "model/improved_energy_model.pkl"))
+    scaler = joblib.load(os.path.join(os.path.dirname(__file__), "model/scaler.pkl"))
+    selector = joblib.load(os.path.join(os.path.dirname(__file__), "model/feature_selector.pkl"))
+    selected_features = joblib.load(os.path.join(os.path.dirname(__file__), "model/selected_features.pkl"))
+    print("✅ ML models loaded successfully")
+except Exception as e:
+    print(f"⚠️ Warning: Could not load ML models: {e}")
+    # Fallback to basic calculation if models fail
+    ml_model = None
+    scaler = None
+    selector = None
+    selected_features = None
 
 def query_huggingface(prompt):
     try:
@@ -47,7 +109,8 @@ def query_huggingface(prompt):
                 }
             ],
             max_tokens=60,
-            temperature=0.7
+            temperature=0.7,
+            timeout=30
         )
 
         reply = completion.choices[0].message.content
@@ -116,31 +179,6 @@ def create_user(name, email, password_hash):
 
 init_auth_db()
 
-# =========================
-# 🤖 LOAD IMPROVED ML MODEL
-# =========================
-try:
-    ml_model = joblib.load(os.path.join(os.path.dirname(__file__), "model/improved_energy_model.pkl"))
-    scaler = joblib.load(os.path.join(os.path.dirname(__file__), "model/scaler.pkl"))
-    selector = joblib.load(os.path.join(os.path.dirname(__file__), "model/feature_selector.pkl"))
-    selected_features = joblib.load(os.path.join(os.path.dirname(__file__), "model/selected_features.pkl"))
-    print("✅ ML models loaded successfully")
-except Exception as e:
-    print(f"⚠️ Warning: Could not load ML models: {e}")
-    # Fallback to basic calculation if models fail
-    ml_model = None
-    scaler = None
-    selector = None
-    selected_features = None
-
-# =========================
-# 🤖 HUGGING FACE CHATBOT SETUP
-# =========================
-# Using Hugging Face Inference API with Google Gemma-2B
-
-# =========================
-# CHATBOT FUNCTION
-# =========================
 def chatbot_response(user_message):
     msg = user_message.lower()
 
@@ -158,6 +196,7 @@ def chatbot_response(user_message):
     except Exception as e:
         print("Chatbot Error:", str(e))
         return "⚡ EcoBot is busy."
+
 
 # =========================
 # 🔐 AUTH: session + guards
@@ -195,7 +234,7 @@ def require_login():
 def home():
     return render_template("index.html")
 
-@app.route("/predict")
+@app.route("/predict-page")
 def predict_page():
     return render_template("predict.html")
 
@@ -406,13 +445,12 @@ def predict():
     ]])
     
     # Select top 20 features (same as training)
-    selected_features_array = selector.transform(all_features)
-    
-    # Scale features
-    scaled_features = scaler.transform(selected_features_array)
-    
-    # Make prediction with improved model
-    ml_prediction = float(ml_model.predict(scaled_features)[0])
+    if ml_model and scaler and selector:
+        selected_features_array = selector.transform(all_features)
+        scaled_features = scaler.transform(selected_features_array)
+        ml_prediction = float(ml_model.predict(scaled_features)[0])
+    else:
+        ml_prediction = total_energy  # fallback
     
     # Keep existing calculation for consistency
     final_energy = (total_energy * 0.7) + (ml_prediction * 0.3)
@@ -446,4 +484,4 @@ def predict():
 # 🚀 RUN APP
 # =========================
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000)
