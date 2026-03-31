@@ -19,7 +19,7 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from openai import OpenAI
-import gdown
+import requests
 
 # Ensure model directory exists
 os.makedirs("model", exist_ok=True)
@@ -29,9 +29,13 @@ def download_file(url, filename):
     if not os.path.exists(filename):
         print(f"📥 Downloading {filename}...")
         try:
-            gdown.download(url, filename, quiet=False)
+            r = requests.get(url, stream=True, timeout=60)
+            r.raise_for_status()
+            with open(filename, "wb") as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
             print(f"✅ Downloaded {filename}")
-            return True
         except Exception as e:
             print(f"❌ Failed to download {filename}: {e}")
             return False
@@ -55,7 +59,7 @@ client = OpenAI(
 # =========================
 print("🔄 Checking model files...")
 
-# Download model files if they don't exist
+# Download model files if they don't exist (BACK TO ORIGINAL)
 model_files = [
     ("https://drive.google.com/uc?id=1keHlBAsOuV0LtJJFv5Lp1IRyc1ARL2C4", "model/improved_energy_model.pkl"),
     ("https://drive.google.com/uc?id=1p9kx-Jo8f2hXgupaes4qnoWKmSJh2g-7", "model/scaler.pkl"),
@@ -480,5 +484,4 @@ def predict():
 # 🚀 RUN APP
 # =========================
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=10000)
